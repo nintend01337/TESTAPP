@@ -53,6 +53,18 @@ namespace TESTAPP.Helpers
         }
 
         /// <summary>
+        /// Производит валидацию введеного числа.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static bool ValidateDigits(string input) 
+        {
+            string pattern = @"^\d[0-9]{1,}$";
+            return Validate(input, pattern);
+        }
+
+
+        /// <summary>
         /// Общий метод валидации,используется внутри класса и не вызывается на прямую
         /// </summary>
         /// <param name="input"></param>

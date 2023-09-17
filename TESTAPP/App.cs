@@ -28,7 +28,7 @@ namespace TESTAPP
             Cui.MainMenu();
             PullEvent();
         }
-        
+
         /// <summary>
         /// Обработчик главного меню
         /// </summary>
@@ -65,7 +65,7 @@ namespace TESTAPP
                     case "6":
                         RemoveCustomerById();
                         break;
-                    
+
                     case "7":
                         RemoveOrderById();
                         break;
@@ -83,29 +83,40 @@ namespace TESTAPP
         {
             Console.WriteLine("Добавление Клиента :\n");
             Console.WriteLine("Имя:\n");
-            var FirstName = Console.ReadLine();
+            var firstName = Console.ReadLine();
             Console.WriteLine("Фамилия:\n");
-            var LastName = Console.ReadLine();
+            var lastName = Console.ReadLine();
             Console.WriteLine("Имейл:\n");
-            var Email = Console.ReadLine();
+            var email = Console.ReadLine();
             Console.WriteLine("Телефон:\n");
-            var PhoneNumber = Console.ReadLine();
-
-            DataBaseConnector db = new DataBaseConnector();
-            db.OpenConnection();
+            var phoneNumber = Console.ReadLine();
 
             string queryString = $"insert into Customers(FirstName,LastName,Email,PhoneNumber) values" +
-                                 $" ('{FirstName}','{LastName}','{Email}','{PhoneNumber}')";
+                                 $" ('{firstName}','{lastName}','{email}','{phoneNumber}')";
 
-            SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
-
-            if (cmd.ExecuteNonQuery() == 1)
+            //Если прошли валидацию выполняем запись в БД
+            if (Validator.ValidateName(firstName) && Validator.ValidateName(lastName) &&
+                   Validator.ValidateEmail(email) && Validator.ValidatePhone(phoneNumber))
             {
-                Console.WriteLine("Операция выполнена успешно!");
+                DataBaseConnector db = new DataBaseConnector();
+                db.OpenConnection();
+
+                SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+
+                if (cmd.ExecuteNonQuery() == 1)
+                {
+                    Console.WriteLine("Операция выполнена успешно!");
+                }
+                db.CloseConnection();
+
             }
-            db.CloseConnection();
-           
-            
+            else
+            {
+                Console.WriteLine("Неверные данные проверьте ввод!");
+                Console.ReadKey();
+                AddCustomer();
+            }
+
         }
 
         /// <summary>
@@ -115,20 +126,20 @@ namespace TESTAPP
         {
             Cui.ClearScreen();
             FetchCustomers();
-           
+
             Console.WriteLine("Добавление заказа:\n");
             Console.WriteLine("Код клиента:\n");
-            var CustomerID = Console.ReadLine();
+            var customerID = Console.ReadLine();
             Console.WriteLine("Имя заказа:\n");
-            var OrderName = Console.ReadLine();
+            var orderName = Console.ReadLine();
             Console.WriteLine("Сумма:\n");
-            var OrderAmount = Console.ReadLine();
-            string Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var orderAmount = Console.ReadLine();
+            string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             //string Date = DateTime.Now.ToString("yyyy-MM-dd");
-          
+
             string queryString = $"insert into Orders(CustomerID,OrderName,OrderDate,OrderAmount) values" +
-                $"('{CustomerID}','{OrderName}', convert(datetime,'{Date}',120),'{OrderAmount}')";
-            
+                $"('{customerID}','{orderName}', convert(datetime,'{date}',120),'{orderAmount}')";
+
             DataBaseConnector db = new DataBaseConnector();
             db.OpenConnection();
 
@@ -184,7 +195,7 @@ namespace TESTAPP
                 while (reader.Read())
                 {
                     //Console.WriteLine("{0,3},{1,15},{2,15},{3,32},{4,12}",$"{reader[0]}\t{reader[1]}\t{reader[2]}\t{reader[3]}\t{reader[4]}\t");
-                    Console.WriteLine("{0,3}\t{1,15}\t{2,15}\t{3,32}\t{4,24}",reader[0],reader[1],reader[2],reader[3],reader[4]);
+                    Console.WriteLine("{0,3}\t{1,15}\t{2,15}\t{3,32}\t{4,24}", reader[0], reader[1], reader[2], reader[3], reader[4]);
                 }
             }
             Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
@@ -199,38 +210,97 @@ namespace TESTAPP
             Console.WriteLine("Получение списка заказов по ID клиента");
             Console.WriteLine("Введите Id клиента:");
             var clientID = Console.ReadLine();
-            
-            DataBaseConnector db = new DataBaseConnector();
-            db.OpenConnection();
-            string queryString = $"SELECT O.OrderID, C.FirstName, C.LastName,O.OrderName,O.OrderDate,O.OrderAmount " +
-                                 $"FROM Orders AS O INNER JOIN Customers AS C ON O.CustomerID = C.CustomerID " +
-                                 $"WHERE O.CustomerID = {clientID};";
-            SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
-
-            Cui.ClearScreen();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            if (Validator.ValidateDigits(clientID)) 
             {
-                while (reader.Read())
+
+                DataBaseConnector db = new DataBaseConnector();
+                db.OpenConnection();
+                string queryString = $"SELECT O.OrderID, C.FirstName, C.LastName,O.OrderName,O.OrderDate,O.OrderAmount " +
+                                     $"FROM Orders AS O INNER JOIN Customers AS C ON O.CustomerID = C.CustomerID " +
+                                     $"WHERE O.CustomerID = {clientID};";
+                SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+
+                Cui.ClearScreen();
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    Console.WriteLine($"{reader[0]}\t {reader[1]}\t {reader[2]}\t {reader[3]}\t {reader[4]}\t");
+                    while (reader.Read())
+                    {
+                        Console.WriteLine($"{reader[0]}\t {reader[1]}\t {reader[2]}\t {reader[3]}\t {reader[4]}\t");
+                    }
                 }
+                Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
+                Console.ReadKey();
             }
-            Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
-            Console.ReadKey();
+            else
+            {
+                Console.WriteLine("Введены неверный ID");
+                FetchOrdersById();
+            }
         }
-    /// <summary>
-    /// Удаляет клиента по CustomerID
-    /// </summary>
-        private void RemoveCustomerById() 
+        /// <summary>
+        /// Удаляет клиента по CustomerID
+        /// </summary>
+        private void RemoveCustomerById()
         {
             Console.WriteLine("Удаление клиента по ID");
+            Console.WriteLine("Введите Id клиента для удаления:");
+            var clientID = Console.ReadLine();
+
+            if (Validator.ValidateDigits(clientID))
+            {
+                DataBaseConnector db = new DataBaseConnector();
+                db.OpenConnection();
+                string queryString = $"DELETE FROM Customers WHERE CustomerID = {clientID}";
+                SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+                if (cmd.ExecuteNonQuery() == 1)
+                {
+                    Console.WriteLine("Операция выполнена успешно!");
+                }
+                db.CloseConnection();
+
+                Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
+                Console.ReadKey();
+
+            }
+            else
+            {
+                Console.WriteLine("Введены неверный ID");
+                RemoveCustomerById();
+            }
+
+            Console.ReadKey();
         }
         /// <summary>
         /// Удаляет заказа по OrderID
         /// </summary>
-        private void RemoveOrderById() 
+        private void RemoveOrderById()
         {
             Console.WriteLine("Удаление заказа по ID");
+            Console.WriteLine("Введите Id заказа:");
+            var orderID = Console.ReadLine();
+
+            if (Validator.ValidateDigits(orderID)) 
+            {
+                DataBaseConnector db = new DataBaseConnector();
+                db.OpenConnection();
+                string queryString = $"DELETE FROM Orders WHERE OrderID = {orderID}";
+                SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+                //Cui.ClearScreen();
+
+                if (cmd.ExecuteNonQuery() == 1)
+                {
+                    Console.WriteLine("Операция выполнена успешно!");
+                }
+                db.CloseConnection();
+
+                Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Введены неверный ID");
+                RemoveOrderById();
+            }  
         }
     }
 }
