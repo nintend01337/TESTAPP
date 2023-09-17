@@ -59,7 +59,7 @@ namespace TESTAPP.Helpers
         /// <returns></returns>
         public static bool ValidateDigits(string input) 
         {
-            string pattern = @"^\d[0-9]{1,}$";
+            string pattern = @"^[0-9]+$";
             return Validate(input, pattern);
         }
 

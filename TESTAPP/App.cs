@@ -151,7 +151,6 @@ namespace TESTAPP
                 Console.WriteLine("Операция выполнена успешно!");
             }
             db.CloseConnection();
-
         }
 
         /// <summary>
@@ -210,7 +209,7 @@ namespace TESTAPP
             Console.WriteLine("Получение списка заказов по ID клиента");
             Console.WriteLine("Введите Id клиента:");
             var clientID = Console.ReadLine();
-            if (Validator.ValidateDigits(clientID)) 
+            if (Validator.ValidateDigits(clientID))
             {
 
                 DataBaseConnector db = new DataBaseConnector();
@@ -242,6 +241,7 @@ namespace TESTAPP
         /// </summary>
         private void RemoveCustomerById()
         {
+            FetchCustomers();
             Console.WriteLine("Удаление клиента по ID");
             Console.WriteLine("Введите Id клиента для удаления:");
             var clientID = Console.ReadLine();
@@ -250,26 +250,29 @@ namespace TESTAPP
             {
                 DataBaseConnector db = new DataBaseConnector();
                 db.OpenConnection();
-                string queryString = $"DELETE FROM Customers WHERE CustomerID = {clientID}";
+
+                //Удаляем сначала заказы, затем самого пользователя
+                string queryString = $"DELETE FROM Orders WHERE CustomerID ={clientID}" +
+                                     $"DELETE FROM Customers WHERE CustomerID = {clientID}";
+
                 SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+
                 if (cmd.ExecuteNonQuery() == 1)
                 {
                     Console.WriteLine("Операция выполнена успешно!");
                 }
-                db.CloseConnection();
 
+                db.CloseConnection();
                 Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
                 Console.ReadKey();
-
             }
             else
             {
                 Console.WriteLine("Введены неверный ID");
                 RemoveCustomerById();
             }
-
-            Console.ReadKey();
         }
+
         /// <summary>
         /// Удаляет заказа по OrderID
         /// </summary>
@@ -279,20 +282,19 @@ namespace TESTAPP
             Console.WriteLine("Введите Id заказа:");
             var orderID = Console.ReadLine();
 
-            if (Validator.ValidateDigits(orderID)) 
+            if (Validator.ValidateDigits(orderID))
             {
                 DataBaseConnector db = new DataBaseConnector();
                 db.OpenConnection();
                 string queryString = $"DELETE FROM Orders WHERE OrderID = {orderID}";
                 SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
-                //Cui.ClearScreen();
 
                 if (cmd.ExecuteNonQuery() == 1)
                 {
                     Console.WriteLine("Операция выполнена успешно!");
                 }
-                db.CloseConnection();
 
+                db.CloseConnection();
                 Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
                 Console.ReadKey();
             }
@@ -300,7 +302,7 @@ namespace TESTAPP
             {
                 Console.WriteLine("Введены неверный ID");
                 RemoveOrderById();
-            }  
+            }
         }
     }
 }
