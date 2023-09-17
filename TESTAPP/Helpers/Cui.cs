@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace TESTAPP
 {
-    public  class Cui
+    /// <summary>
+    /// Utility Класс для работы с терминалом
+    /// </summary>
+    public static class Cui
     {
-        public void MainMenu()
+        public static void MainMenu()
         {
             Console.WriteLine("Выберите действие :\n" +
                 "1. Добавить Нового Клиента\n" +
@@ -19,7 +22,7 @@ namespace TESTAPP
         
         }
 
-        public void ClearScreen() 
+        public static void ClearScreen() 
         {
             Console.Clear();
             Console.SetCursorPosition(0, 0);

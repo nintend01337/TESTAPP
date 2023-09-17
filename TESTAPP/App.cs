@@ -9,42 +9,42 @@ using TESTAPP.Data;
 
 namespace TESTAPP
 {
-    internal class App
+    /// <summary>
+    /// Главный класс приложения. 
+    /// </summary>
+    public class App
     {
         public App()
         {
-            Initialize();
+            Start();
         }
 
-        private void Initialize() 
+        /// <summary>
+        /// Точка входа в приложение
+        /// </summary>
+        private void Start()
         {
-
-        }
-
-        //Точка входа в приложение
-        public void Start()
-        {
-            Cui terminal = new Cui();
-            terminal.MainMenu();
+            Cui.MainMenu();
             PullEvent();
-        }        
-        //Обработчик главного меню
-        void PullEvent() 
+        }
+        
+        /// <summary>
+        /// Обработчик главного меню
+        /// </summary>
+        void PullEvent()
         {
-            while (true) 
+            while (true)
             {
-                Cui terminal = new Cui();
-                terminal.ClearScreen();
-                terminal.MainMenu();
+                Cui.ClearScreen();
+                Cui.MainMenu();
                 var input = Console.ReadLine().ToLower();
 
-
-                switch(input)
+                switch (input)
                 {
                     case "1":
                         AddCustomer();
                         break;
-                    
+
                     case "2":
                         FetchCustomers();
                         break;
@@ -56,7 +56,7 @@ namespace TESTAPP
                     case "4":
                         FetchOrders();
                         break;
-                    
+
                     case "5":
                         FetchOrdersById();
                         break;
@@ -67,12 +67,13 @@ namespace TESTAPP
                 }
             }
         }
-    
-        //Добавление пользователя в БД
-        void AddCustomer() 
+
+        /// <summary>
+        /// Добавление пользователя в БД
+        /// </summary>
+        private void AddCustomer()
         {
-           Console.WriteLine("Добавление Клиента :\n");
-            //Customer customer = new Customer();
+            Console.WriteLine("Добавление Клиента :\n");
             Console.WriteLine("Имя:\n");
             var FirstName = Console.ReadLine();
             Console.WriteLine("Фамилия:\n");
@@ -81,44 +82,13 @@ namespace TESTAPP
             var Email = Console.ReadLine();
             Console.WriteLine("Телефон:\n");
             var PhoneNumber = Console.ReadLine();
-            
-            DataBase db = new DataBase();
+
+            DataBaseConnector db = new DataBaseConnector();
             db.OpenConnection();
 
             string queryString = $"insert into Customers(FirstName,LastName,Email,PhoneNumber) values" +
                                  $" ('{FirstName}','{LastName}','{Email}','{PhoneNumber}')";
-            
-            SqlCommand cmd = new SqlCommand(queryString,db.GetConnection());
-            
-            if (cmd.ExecuteNonQuery() == 1) 
-            {
-                Console.WriteLine("Операция выполнена успешно!");    
-            }
-            db.CloseConnection();
-            
-        }
-        
-        //Добавление заказа в БД
-        void AddOrder() 
-        {
-            Console.WriteLine("Добавление заказа:\n");
-            FetchCustomers();
 
-            Console.WriteLine("Код клиента:\n");
-            var CustomerID = Console.ReadLine();
-            Console.WriteLine("Имя заказа:\n");
-            var OrderName = Console.ReadLine();
-            Console.WriteLine("Сумма:\n");
-            var OrderAmount = Console.ReadLine();
-            var Date = DateTime.Now;
-            //string sqlDate
-
-
-            string queryString = $"insert into Orders(CustomerID,OrderName,OrderDate,OrderAmount) values" +
-                $"('{CustomerID}','{OrderName}','{OrderAmount}','{Date}')";
-            DataBase db = new DataBase();
-            db.OpenConnection();
-           
             SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
 
             if (cmd.ExecuteNonQuery() == 1)
@@ -129,30 +99,67 @@ namespace TESTAPP
 
         }
 
-        //Получение списка клиентов из БД 
-        void FetchCustomers() 
+        /// <summary>
+        /// Добавление заказа в БД
+        /// </summary>
+        private void AddOrder()
+        {
+            Console.WriteLine("Добавление заказа:\n");
+            FetchCustomers();
+
+            Console.WriteLine("Код клиента:\n");
+            var CustomerID = Console.ReadLine();
+            Console.WriteLine("Имя заказа:\n");
+            var OrderName = Console.ReadLine();
+            Console.WriteLine("Сумма:\n");
+            var OrderAmount = Console.ReadLine();
+            string Date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            //string Date = DateTime.Now.ToString("yyyy-MM-dd");
+          
+            string queryString = $"insert into Orders(CustomerID,OrderName,OrderDate,OrderAmount) values" +
+                $"('{CustomerID}','{OrderName}','{OrderAmount}','{Date}')";
+            DataBaseConnector db = new DataBaseConnector();
+            db.OpenConnection();
+
+            SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+            // cmd.Parameters.Add(new SqlParameter("@Datevalue", System.Data.SqlDbType.DateTime)).Value = Date;
+
+            if (cmd.ExecuteNonQuery() == 1)
+            {
+                Console.WriteLine("Операция выполнена успешно!");
+            }
+            db.CloseConnection();
+
+        }
+
+        /// <summary>
+        /// Получение списка клиентов из БД 
+        /// </summary>
+        private void FetchCustomers()
         {
             Console.WriteLine("Получение списка клиентов:\n");
-            DataBase db = new DataBase();
+            DataBaseConnector db = new DataBaseConnector();
             db.OpenConnection();
             string queryString = $"SELECT * FROM Customers";
-            SqlCommand cmd = new SqlCommand(queryString,db.GetConnection());
-            
-            using(SqlDataReader reader = cmd.ExecuteReader()) 
+            SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
             {
-                while (reader.Read()) 
+                while (reader.Read())
                 {
                     Console.WriteLine($"{reader[0]}\t {reader[1]}\t {reader[2]}\t {reader[3]}\t {reader[4]}\t");
-                }    
+                }
             }
             //Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
-            //Console.ReadKey();
+            Console.ReadKey();
         }
-        //Получение списка заказов из БД
-        void FetchOrders() 
+        /// <summary>
+        /// Получение списка заказов из БД
+        /// </summary>
+        private void FetchOrders()
         {
             Console.WriteLine("Получение списка заказов");
-            DataBase db = new DataBase();
+            DataBaseConnector db = new DataBaseConnector();
             db.OpenConnection();
             string queryString = $"SELECT * FROM Orders";
             SqlCommand cmd = new SqlCommand(queryString, db.GetConnection());
@@ -167,9 +174,11 @@ namespace TESTAPP
             Console.WriteLine("Нажмите любую клавишу для возврата в главное меню.....");
             Console.ReadKey();
         }
-        
-        //Получение заказов клиента по айди 
-        void FetchOrdersById() 
+
+        /// <summary>
+        /// Получение заказов клиента по айди 
+        /// </summary>
+        void FetchOrdersById()
         {
             Console.WriteLine();
         }

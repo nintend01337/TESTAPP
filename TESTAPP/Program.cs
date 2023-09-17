@@ -12,7 +12,7 @@ namespace TESTAPP
         static void Main(string[] args)
         {
             App app = new App();
-            app.Start();
+           // app.Start();
             Console.WriteLine("Программа завершила работу.");
             Console.Read();
         }
