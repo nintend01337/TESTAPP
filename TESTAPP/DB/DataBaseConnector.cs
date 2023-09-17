@@ -23,9 +23,17 @@ namespace TESTAPP
         {
             if (connection.State == ConnectionState.Closed)
             {
-                connection.Open();
+                try
+                {
+                    connection.Open();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Не удалось подключиться к базе данных" +
+                                        $" проверьте подключение а также убедитесь что БД существует.\n{e.Message}");
+                } 
             }
-            Console.WriteLine("Подключение открыто .../");
+            //Console.WriteLine("Подключение открыто .../");
             //Console.WriteLine("Свойства подключения:");
             //Console.WriteLine($"\tСтрока подключения: {connection.ConnectionString}");
             //Console.WriteLine($"\tБаза данных: {connection.Database}");
@@ -44,7 +52,7 @@ namespace TESTAPP
             {
                 connection.Close();
             }
-            Console.WriteLine("Подключение закрыто ...\\");
+            //Console.WriteLine("Подключение закрыто ...\\");
         }
         
         /// <summary>

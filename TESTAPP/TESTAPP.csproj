@@ -48,6 +48,7 @@
     <Compile Include="DB\DataBaseConnector.cs" />
     <Compile Include="Data\Customer.cs" />
     <Compile Include="Data\Order.cs" />
+    <Compile Include="Helpers\Validator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Migrations\CreateDataBase.sql" />
+    <Content Include="Migrations\DeleteDataBase.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
