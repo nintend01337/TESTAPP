@@ -26,6 +26,7 @@ namespace TESTAPP.Helpers
         {
             //шаблон тел номера начинается с + и след 11 цифр
             string phonePattern = @"^\+\d{11}$";
+            
             return Validate(phoneNumber, phonePattern);
         }
         
@@ -37,6 +38,7 @@ namespace TESTAPP.Helpers
         public static bool ValidateEmail(string email)
         {
             string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            
             return Validate(email, emailPattern);
         }
 
@@ -49,6 +51,7 @@ namespace TESTAPP.Helpers
         public static bool ValidateName(string name)
         {
             string pattern = @"^[А-Я][а-я]*$";
+            
             return Validate(name, pattern);
         }
 
@@ -60,9 +63,16 @@ namespace TESTAPP.Helpers
         public static bool ValidateDigits(string input) 
         {
             string pattern = @"^[0-9]+$";
+            
             return Validate(input, pattern);
         }
 
+        public static bool ValidateDecimal(string input)
+        {
+            string pattern = @"^\d+(\.\d+)?$";
+
+            return Validate(input, pattern);
+        }
 
         /// <summary>
         /// Общий метод валидации,используется внутри класса и не вызывается на прямую
@@ -73,6 +83,7 @@ namespace TESTAPP.Helpers
         private static bool Validate(string input,string pattern) 
         {
             Regex regex = new Regex(pattern);
+            
             return regex.IsMatch(input);
         }
     }

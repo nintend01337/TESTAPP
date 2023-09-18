@@ -33,14 +33,6 @@ namespace TESTAPP
                                         $" проверьте подключение а также убедитесь что БД существует.\n{e.Message}");
                 } 
             }
-            //Console.WriteLine("Подключение открыто .../");
-            //Console.WriteLine("Свойства подключения:");
-            //Console.WriteLine($"\tСтрока подключения: {connection.ConnectionString}");
-            //Console.WriteLine($"\tБаза данных: {connection.Database}");
-            //Console.WriteLine($"\tСервер: {connection.DataSource}");
-            //Console.WriteLine($"\tВерсия сервера: {connection.ServerVersion}");
-            //Console.WriteLine($"\tСостояние: {connection.State}");
-            //Console.WriteLine($"\tWorkstationld: {connection.WorkstationId}");
         }
 
        /// <summary>
@@ -52,7 +44,6 @@ namespace TESTAPP
             {
                 connection.Close();
             }
-            //Console.WriteLine("Подключение закрыто ...\\");
         }
         
         /// <summary>

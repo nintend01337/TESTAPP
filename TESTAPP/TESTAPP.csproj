@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="DB\QueryExecutor.cs" />
     <Compile Include="Helpers\Cui.cs" />
     <Compile Include="DB\DataBaseConnector.cs" />
     <Compile Include="Data\Customer.cs" />
